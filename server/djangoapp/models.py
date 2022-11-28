@@ -41,12 +41,10 @@ class CarModel(models.Model):
         null=False,
         max_length=20,
         choices=CARMODEL_CHOICES,
-        default=SUV
+        default='SUV'
     )
     def __str__(self):
-        return "Car Make: " + self.carMake + "," + \
-            "Name: " + self.name + "," + \
-            "Dealer ID: " + self.dealerId + "," + \
+        return "Name: " + self.name + "," + \
             "Car Type: " + self.carType
 
 
