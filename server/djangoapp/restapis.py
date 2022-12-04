@@ -57,7 +57,6 @@ def get_dealers_from_cf(url, **kwargs):
         json_result = get_request(url)
     if json_result:
         # Get the row list in JSON as dealers
-        print(json_result)
         if st: 
             dealers = json_result["docs"]
             for dealer_doc in dealers:
