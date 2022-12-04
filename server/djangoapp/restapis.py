@@ -57,6 +57,7 @@ def get_dealers_from_cf(url, **kwargs):
         json_result = get_request(url)
     if json_result:
         # Get the row list in JSON as dealers
+        
         if st: 
             dealers = json_result["docs"]
             for dealer_doc in dealers:
@@ -90,12 +91,20 @@ def get_dealers_from_cf(url, **kwargs):
 # def get_dealer_by_id_from_cf(url, dealerId):
 # - Call get_request() with specified arguments
 # - Parse JSON results into a DealerView object list
-
+def get_dealer_reviews_from_cf(url, dealerId):
+    results = []
+    json_result = get_request(url, dealership=dealerId)
+    if json_result:
+        dealer = json_result["docs"][0]
+        
+    return results
 
 # Create an `analyze_review_sentiments` method to call Watson NLU and analyze text
 # def analyze_review_sentiments(text):
 # - Call get_request() with specified arguments
 # - Get the returned sentiment label such as Positive or Negative
 
+def analyze_review_sentiments(text):
+    return
 
 
