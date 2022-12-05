@@ -35,8 +35,8 @@ def post_request(url, json_payload, **kwargs):
         print("Network exception occurred")
     status_code = response.status_code
     print("With status {} ".format(status_code))
-    json_data = json.loads(response.text)
-    return
+    return json.loads(response.text)
+    
 
 # Create a get_dealers_from_cf method to get dealers from a cloud function
 # def get_dealers_from_cf(url, **kwargs):
