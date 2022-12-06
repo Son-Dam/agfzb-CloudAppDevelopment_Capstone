@@ -46,15 +46,15 @@ def post_request(url, json_payload, **kwargs):
 def get_dealers_from_cf(url, **kwargs):
     results = []
     # Call get_request with a URL parameter
-    st = kwargs.get("st")
-    if st:
-        json_result = get_request(url, st=st)
+    dealerId = kwargs.get("dealerId")
+    if dealerId:
+        json_result = get_request(url, dealerId=dealerId)
     else:
         json_result = get_request(url)
     if json_result:
         # Get the row list in JSON as dealers
         
-        if st: 
+        if dealerId: 
             dealers = json_result["docs"]
             for dealer_doc in dealers:
                 # Get its content in `doc` object
@@ -95,8 +95,18 @@ def get_dealer_reviews_from_cf(url, dealerId):
         for review in reviews:
             sentiment = analyze_review_sentiments(review["review"])
             review_obj = DealerReview(dealership = review["dealership"], name = review["name"], purchase = review["purchase"],
-                                    review = review["review"], purchase_date = review["purchase_date"],car_make = review["car_make"],
-                                    car_model = review["car_model"], car_year=review["car_year"],sentiment = sentiment,id = review["id"])
+                                    review = review["review"], sentiment = sentiment)
+            if "id" in review:
+                review_obj.id = review["id"]
+            if "purchase_date" in review:
+                review_obj.purchase_date = review["purchase_date"]
+            if "car_make" in review:
+                review_obj.car_make = review["car_make"]
+            if "car_model" in review:
+                review_obj.car_model = review["car_model"]
+            if "car_year" in review:
+                review_obj.car_year = review["car_year"]
+                                  
             results.append(review_obj)
     return results
 
