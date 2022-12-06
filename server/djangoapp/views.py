@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import CarDealer
+from .models import CarDealer,CarModel
 from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -125,18 +125,28 @@ def add_review(request, dealer_id):
     context = {}
     
     if request.method == "GET":
-        render(request, 'djangoapp/add_review.html', context)
+        cars = get_object_or_404(CarModel,id=dealer_id)
+        context["cars"] = cars
+        return render(request, 'djangoapp/add_review.html', context)
     if request.method == "POST":
         if request.user.is_authenticated():
-            json_payload ={}
+            car = get_object_or_404(CarModel, pk=request.POST["car"])
+            json_payload ={}        
             review = dict()
-            review['id'] = get_id_from_cf()
+            review['name'] = request.user.username
             review["time"] =datetime.utcnow().isoformat
-            
+            review["purchase"] = False
+            if "purchasecheck" in request.POST:
+                if request.POST["purchasecheck"] == 'on':
+                    review["purchase"] = True
+            review["purchase_date"] = request.POST["purchasedate"]
+            review["car_make"] = car.make.name
+            review["car_model"] = car.name
+            review["car_year"] = int(car.year.strftime("%Y"))
             review["dealership"] = dealer_id
             review["review"] = request.POST('review')
             json_payload['review'] = review
             response = post_request("https://us-east.functions.appdomain.cloud/api/v1/web/Son%20Dam_djangoserver-space/dealership-package/post-review",
                                     json_payload = json_payload)
             
-            return 
+            return redirect("djangoapp:dealer_details", id=dealer_id)
