@@ -112,6 +112,6 @@ def analyze_review_sentiments(text):
     if response:
         sentiment = response["sentiment"]
 
-    return sentiment
+    return sentiment["document"]["label"]
 
 
