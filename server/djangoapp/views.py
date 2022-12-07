@@ -131,14 +131,17 @@ def add_review(request, dealer_id):
     context = {}
     
     if request.method == "GET":
-        cars = CarModel.objects.filter(id=dealer_id)
+        context['dealer'] = get_dealers_from_cf("https://us-east.functions.appdomain.cloud/api/v1/web/Son%20Dam_djangoserver-space/dealership-package/get-dealership",
+                                            dealerId = dealer_id)[0]
+        cars = CarModel.objects.filter(dealerId=dealer_id)
+        print(cars)
         context["cars"] = cars
         return render(request, 'djangoapp/add_review.html', context)
     if request.method == "POST":
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             car = get_object_or_404(CarModel, pk=request.POST["car"])
             json_payload ={}        
-            review = dict()
+            review = {}
             review['name'] = request.user.username
             review["time"] =datetime.utcnow().isoformat
             review["purchase"] = False
@@ -146,11 +149,11 @@ def add_review(request, dealer_id):
                 if request.POST["purchasecheck"] == 'on':
                     review["purchase"] = True
             review["purchase_date"] = request.POST["purchasedate"]
-            review["car_make"] = car.make.name
+            review["car_make"] = car.carMake.name
             review["car_model"] = car.name
             review["car_year"] = int(car.year.strftime("%Y"))
             review["dealership"] = dealer_id
-            review["review"] = request.POST('review')
+            review["review"] = request.POST['content']
             json_payload['review'] = review
             response = post_request("https://us-east.functions.appdomain.cloud/api/v1/web/Son%20Dam_djangoserver-space/dealership-package/post-review",
                                     json_payload = json_payload)
