@@ -134,16 +134,15 @@ def add_review(request, dealer_id):
         context['dealer'] = get_dealers_from_cf("https://us-east.functions.appdomain.cloud/api/v1/web/Son%20Dam_djangoserver-space/dealership-package/get-dealership",
                                             dealerId = dealer_id)[0]
         cars = CarModel.objects.filter(dealerId=dealer_id)
-        print(cars)
         context["cars"] = cars
         return render(request, 'djangoapp/add_review.html', context)
     if request.method == "POST":
         if request.user.is_authenticated:
             car = get_object_or_404(CarModel, pk=request.POST["car"])
             json_payload ={}        
-            review = {}
+            review = dict()
             review['name'] = request.user.username
-            review["time"] =datetime.utcnow().isoformat
+            review["time"] =datetime.utcnow().isoformat()
             review["purchase"] = False
             if "purchasecheck" in request.POST:
                 if request.POST["purchasecheck"] == 'on':
@@ -158,4 +157,4 @@ def add_review(request, dealer_id):
             response = post_request("https://us-east.functions.appdomain.cloud/api/v1/web/Son%20Dam_djangoserver-space/dealership-package/post-review",
                                     json_payload = json_payload)
             
-            return redirect("djangoapp:dealer_details", id=dealer_id)
+            return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
